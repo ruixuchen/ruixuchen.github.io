@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="chenruixu">
+  <meta name="keywords" content="">
+  <title>动态规划算法Dynamic Programming - chenruixu personal page</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Chenruixu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-22 11:46">
+      July 22, 2020 am
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <p>动态规划与分治法相似，都是通过组合子问题的解来求解原问题。不同的是，分治法将问题划分为互不相交的子问题，递归的求解子问题，再将他们的解组合起来，求出原问题的解。与之相反，动态规划应用于子问题重叠的情况，即不同的子问题具有公共的子子问题。在这种情况下，分治法会做许多不必要的工作，他会反复求解那些公共子子问题。而动态规划只会对子子问题求解一次，将其保存在一个表格中，从而避免每次求解时都重新计算。现在我们来逐步的优化一个经典的问题——最长公共子序列，从中分析动态规划的思想方法。</p>
+<h2 id="0-问题描述："><a href="#0-问题描述：" class="headerlink" title="0.问题描述："></a>0.问题描述：</h2><p>最长公共子序列问题（longest-common-subsequence problem）给定两个序列X=&lt;x1,x2,x3,…xm&gt;和Y=&lt;y1,y2,y3…yn&gt;，求X和Y的长度最长的公共子序列。</p>
+<h2 id="1-暴力搜索方法："><a href="#1-暴力搜索方法：" class="headerlink" title="1.暴力搜索方法："></a>1.暴力搜索方法：</h2><p>我们把问题分割成两个部分：遍历和判断。首先遍历X的所有的子序列，然后依次进行判断是否为Y的子序列，并比较得出其中最长的一个。</p>
+<p>对于判断，可以从左向右扫描一遍即可实现，复杂度为O(n)：</p>
+<pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment">    * 判断sub是否为a的子序列</span>
+<span class="hljs-comment">    * <span class="hljs-doctag">@param</span> a</span>
+<span class="hljs-comment">    * <span class="hljs-doctag">@param</span> sub</span>
+<span class="hljs-comment">    * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">isSubsequence</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[] a, <span class="hljs-keyword">char</span>[] sub)</span> </span>&#123;
+        <span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>, j = <span class="hljs-number">0</span>;
+        <span class="hljs-keyword">while</span> (i &lt; a.length &amp;&amp; j &lt; sub.length) &#123;
+            <span class="hljs-keyword">if</span> (sub[j] == a[i]) &#123;
+                i++;
+                j++;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                i++;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">if</span> (j &lt; sub.length)
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+        <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    &#125;</code></pre>
+<p>对于遍历，一个具有m个字符的序列，一共有2^m个子序列。然后逐一进行判断比较，这个算法的时间复杂度为O(2^m）*O(n).</p>
+<p>我们可以借助深度优先搜索的思想进行子序列的遍历：</p>
+<pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment">    * 暴力穷举的方法取最长公共子序列</span>
+<span class="hljs-comment">    * 遍历一个字符串的所有的子序列，共有2^n种结果</span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">bruteforceForLCS</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[] chars1, <span class="hljs-keyword">char</span>[] chars, String res, <span class="hljs-keyword">int</span> k)</span> </span>&#123;
+        <span class="hljs-keyword">if</span> (k &lt; <span class="hljs-number">0</span>) &#123;
+            System.out.println(<span class="hljs-string">"k不能小于0"</span>);
+        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (k == chars.length) &#123;
+            <span class="hljs-keyword">if</span> (!res.isEmpty() &amp;&amp; isSubsequence(chars1, res.toCharArray()) &amp;&amp; longest.length() &lt; res.length()) &#123;
+                longest = res;
+            &#125;
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt;= <span class="hljs-number">1</span>; i++) &#123;
+                <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span>) &#123;
+                    bruteforceForLCS(chars1, chars, res, k + <span class="hljs-number">1</span>);
+                &#125; <span class="hljs-keyword">else</span> &#123;
+                    bruteforceForLCS(chars1, chars, res + chars[k], k + <span class="hljs-number">1</span>);
+                &#125;
+            &#125;
+        &#125;
+    &#125;</code></pre>
+<h2 id="2-基于最优子结构性质的改进"><a href="#2-基于最优子结构性质的改进" class="headerlink" title="2.基于最优子结构性质的改进"></a>2.基于最优子结构性质的改进</h2><p>基本上，任何问题都是可以使用暴力搜索的方式去解决的，但可怕的是，当问题的规模达到一定的程度以后，即使使用最快的计算机，它也需要若干年甚至是若干世纪以后才能给出我们答案。人生苦短，暴力不值得。</p>
+<p>通过对公共子序列形成规律的深入分析，我们发现这样的性质：</p>
+<p>X=&lt;x1,x2,…xm&gt; ，Y=&lt;y1,y2,…yn&gt;，令Z=&lt;z1,z2,…zk&gt;位X和Y的任意最长公共子序列，则有：</p>
+<p>如果Xm=Yn，那么Zk=Xm=Yn且Zk-1是Xm-1和Yn-1的一个最长公共子序列；<br>如果Xm！=Yn，那么Zk！=Xm意味着Z是Xm-1和Y的一个最长公共子序列；<br>如果Xm！=Yn，那么Zk！=Yn意味着Z是Xm和Yn-1的一个最长公共子序列；<br>所以，我们用这个规律来建立一个描述最长公共子序列长度的递归公式：</p>
+<p>有了这个递归公式，我们就可以写出一个指数时间的算法来进行递归计算了：</p>
+<pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment">    * 直接根据递归公式进行求解最长公共子序列</span>
+<span class="hljs-comment">    * <span class="hljs-doctag">@return</span></span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">dpForLCS</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[] a, <span class="hljs-keyword">char</span>[] b, <span class="hljs-keyword">int</span> i, <span class="hljs-keyword">int</span> j, Stack&lt;Character&gt; stack, <span class="hljs-keyword">boolean</span>[] aflag)</span> </span>&#123;
+        count++;
+        System.out.println(<span class="hljs-string">"递归程序正在执行i="</span> + i + <span class="hljs-string">",j="</span> + j);
+        <span class="hljs-keyword">if</span> (i == -<span class="hljs-number">1</span> || j == -<span class="hljs-number">1</span>) &#123;
+            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-keyword">if</span> (a[i] == b[j]) &#123;
+                <span class="hljs-keyword">if</span> (!aflag[i]) &#123;
+                    stack.push(a[i]);
+                    aflag[i] = <span class="hljs-keyword">true</span>;
+                &#125;
+                <span class="hljs-keyword">return</span> dpForLCS(a, b, i - <span class="hljs-number">1</span>, j - <span class="hljs-number">1</span>, stack, aflag) + <span class="hljs-number">1</span>;
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                <span class="hljs-keyword">return</span> Math.max(dpForLCS(a, b, i - <span class="hljs-number">1</span>, j, stack, aflag), dpForLCS(a, b, i, j - <span class="hljs-number">1</span>, stack, aflag));
+            &#125;
+        &#125;
+    &#125;</code></pre>
+<h2 id="3-基于缓存思想的动态规划算法"><a href="#3-基于缓存思想的动态规划算法" class="headerlink" title="3.基于缓存思想的动态规划算法"></a>3.基于缓存思想的动态规划算法</h2><p>可以看出上面直接根据递归公式进行求解的方法会有很多的重复计算，比如为了求X和Y的一个LCS，我们可能需要求X和Yn-1的一个LCS以及Xm-1和Y的一个LCS，这几个问题都会包含Xm-1和Yn-1的LCS这个子问题，对于这种情况，我们将它描述为具有重叠子问题性质。解决的思路是借助缓存的思想，将已经计算出的子问题存储在一个表格里以避免重复进行计算。一般的，可以有如下的递归和迭代两种实现方式。</p>
+<h3 id="3-1自顶向下的递归法（top-down-with-memoization）"><a href="#3-1自顶向下的递归法（top-down-with-memoization）" class="headerlink" title="3.1自顶向下的递归法（top-down with memoization）"></a>3.1自顶向下的递归法（top-down with memoization）</h3><p>此方法依然按照自然的递归形式编写函数，但函数中会保存每个字问题的解（通常保存在一个数组或者散列表中）。当需要一个子问题的解时，函数会首先检查是否保存过此解。如果是，直接返回保存的值，从而节省了计算时间。</p>
+<pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment">    * 自顶向下法(递归形式的动态规划)</span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">dpForLCSDown</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[] a, <span class="hljs-keyword">char</span>[] b, <span class="hljs-keyword">int</span> i, <span class="hljs-keyword">int</span> j, <span class="hljs-keyword">int</span>[][] length)</span> </span>&#123;
+        <span class="hljs-keyword">if</span> (i == <span class="hljs-number">0</span> || j == <span class="hljs-number">0</span>) &#123;
+            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-keyword">if</span> (a[i] == b[j]) &#123;
+                length[i][j] = (length[i][j] == -<span class="hljs-number">1</span> ? (dpForLCSDown(a, b, i - <span class="hljs-number">1</span>, j - <span class="hljs-number">1</span>, length) + <span class="hljs-number">1</span>) : length[i][j]);
+                <span class="hljs-keyword">return</span> length[i][j];
+            &#125; <span class="hljs-keyword">else</span> &#123;
+                length[i - <span class="hljs-number">1</span>][j] = length[i - <span class="hljs-number">1</span>][j] == -<span class="hljs-number">1</span> ? dpForLCSDown(a, b, i - <span class="hljs-number">1</span>, j, length) : length[i - <span class="hljs-number">1</span>][j];
+                length[i][j - <span class="hljs-number">1</span>] = length[i][j - <span class="hljs-number">1</span>] == -<span class="hljs-number">1</span> ? dpForLCSDown(a, b, i, j - <span class="hljs-number">1</span>, length) : length[i][j - <span class="hljs-number">1</span>];
+                <span class="hljs-keyword">return</span> Math.max(length[i - <span class="hljs-number">1</span>][j], length[i][j - <span class="hljs-number">1</span>]);
+            &#125;
+        &#125;
+    &#125;</code></pre>
+<h3 id="3-2自底向上的迭代法（bottom-up-method）"><a href="#3-2自底向上的迭代法（bottom-up-method）" class="headerlink" title="3.2自底向上的迭代法（bottom-up method）"></a>3.2自底向上的迭代法（bottom-up method）</h3><p>把子问题按照规模进行排序，按照由小至大的顺序进行求解。当解决某个子问题时，它所依赖的更小的子问题都已经求解完毕，结果已经保存，每个子问题都只需求解一次。</p>
+<pre><code class="hljs java"><span class="hljs-comment">/**</span>
+<span class="hljs-comment">    * 自底向上法(迭代形式的动态规划)</span>
+<span class="hljs-comment">    */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">dpForLCSUp</span><span class="hljs-params">(<span class="hljs-keyword">char</span>[] a, <span class="hljs-keyword">char</span>[] b)</span> </span>&#123;
+        <span class="hljs-keyword">int</span>[][] length = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[a.length][b.length];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; a.length; i++) &#123;
+            length[i][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span>;
+        &#125;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; b.length; j++) &#123;
+            length[<span class="hljs-number">0</span>][j] = <span class="hljs-number">0</span>;
+        &#125;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">1</span>; i &lt; a.length; i++) &#123;
+            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> j = <span class="hljs-number">1</span>; j &lt; b.length; j++) &#123;
+                <span class="hljs-keyword">if</span> (a[i] == b[j]) &#123;
+                    length[i][j] = length[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] + <span class="hljs-number">1</span>;
+                &#125; <span class="hljs-keyword">else</span> &#123;
+                    length[i][j] = Math.max(length[i - <span class="hljs-number">1</span>][j], length[i][j - <span class="hljs-number">1</span>]);
+                &#125;
+            &#125;
+        &#125;
+        <span class="hljs-keyword">return</span> length[a.length - <span class="hljs-number">1</span>][b.length - <span class="hljs-number">1</span>];
+    &#125;</code></pre>
+<p>上述两种方法具有相同的渐进运行时间，但是由于没有频繁的递归函数调用的开销，自底向上方法的时间复杂度函数通常具有更小的系数。</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>从上面的讨论过程中，我么可以看到适用动态规划算法求解的最优化问题应该具有两个要素：最优子结构性质和子问题重叠。首先，最优子结构性质可是使我们避免暴力遍历所有的子序列；其次，子问题重叠性质可以使我们借助缓存思想，避免对相同的子问题进行重复求解，从而达到比传统分治法更优的性能。最后，我们提炼出设计一个动态规划算法的步骤：</p>
+<p>刻画一个最优解的结构特征；<br>递归的定义最优解的值；<br>计算最优解的值，通常采用自顶向上的方法；<br>利用计算出的信息构造一个最优解；<br>参考文献：<br>[1]Thomas H.Cormen Charles E.Leiserson.Introduction To Algorithms(Third Edition)[M].China Machine Press,2013</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/22/%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%97%AE%E9%A2%98/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">回文字符串问题分析</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/07/22/%E7%BC%93%E5%AD%98%E6%80%9D%E6%83%B3%E5%9C%A8%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/">
+                        <span class="hidden-mobile">缓存思想在算法设计中的应用</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "动态规划算法Dynamic Programming&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

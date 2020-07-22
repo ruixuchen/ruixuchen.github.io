@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="chenruixu">
+  <meta name="keywords" content="">
+  <title>缓存思想在算法设计中的应用 - chenruixu personal page</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Chenruixu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-07-22 11:09">
+      July 22, 2020 am
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      13
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h2 id="1-问题引入"><a href="#1-问题引入" class="headerlink" title="1. 问题引入"></a>1. 问题引入</h2><p>我们先看一下简单的斐波那契数列的递归算法。百度百科中对该问题是这样定义的：</p>
+<blockquote>
+<p>斐波那契数列（Fibonacci sequence），又称<a href="https://baike.baidu.com/item/%E9%BB%84%E9%87%91%E5%88%86%E5%89%B2/115896" target="_blank" rel="noopener">黄金分割</a>数列、因<a href="https://baike.baidu.com/item/%E6%95%B0%E5%AD%A6%E5%AE%B6/1210991" target="_blank" rel="noopener">数学家</a>列昂纳多·斐波那契（Leonardoda Fibonacci）以兔子繁殖为例子而引入，故又称为“<a href="https://baike.baidu.com/item/%E5%85%94%E5%AD%90%E6%95%B0%E5%88%97/6849441" target="_blank" rel="noopener">兔子数列</a>”，指的是这样一个数列：1、1、2、3、5、8、13、21、34、……在数学上，斐波纳契数列以如下被以递推的方法定义：F(1)=1，F(2)=1, F(3)=2,F(n)=F(n-1)+F(n-2)（n&gt;=4，n∈N*）在现代物理、准晶体结构、化学等领域，斐波纳契数列都有直接的应用，为此，美国数学会从1963年起出版了以《斐波纳契数列季刊》为名的一份数学杂志，用于专门刊载这方面的研究成果。</p>
+</blockquote>
+<p>直接根据递推关系式，我们可以设计常规的递归算法：</p>
+<pre><code class="hljs java"><span class="hljs-keyword">if</span> n=<span class="hljs-number">1</span> <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>
+<span class="hljs-keyword">if</span> n=<span class="hljs-number">2</span> <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>
+<span class="hljs-keyword">if</span> n&gt;<span class="hljs-number">2</span> <span class="hljs-keyword">return</span> fibonacci(n-<span class="hljs-number">1</span>)+fibonacci(n-<span class="hljs-number">2</span>)</code></pre>
+
+<p>在这个方法中包含了大量重复的计算，比如在计算fibonacci(n)时需要计算一次fibonacci(n-2)的值，在计算fibonacci(n-1)时仍然要计算一次fibonacci(n-2)的值，问题的规模和计算的次数呈现如下的关系：</p>
+<table>
+<thead>
+<tr>
+<th>问题规模</th>
+<th>计算次数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3</td>
+<td>count(4)+count(5)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>count(5)+count(6)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>count(6)+count(7)</td>
+</tr>
+<tr>
+<td>n-3</td>
+<td>count(n-1)+count(n-2)=3</td>
+</tr>
+<tr>
+<td>n-2</td>
+<td>count(n-2)=2</td>
+</tr>
+<tr>
+<td>n-1</td>
+<td>count(n-1)=1</td>
+</tr>
+</tbody></table>
+<p>可以发现问题规模n的计算次数形成了一种“倒序”排列的斐波那契额数列，解决问题的所需要的计算次数和原问题呈现出相同的规模，执行效率会特别的慢。</p>
+<p>事实上，我们可以使用一个数组缓存下已经计算的子问题的值，当子问题被再次用到时，直接使用缓存的值即可，避免重新计算，从而提升效率。</p>
+<pre><code class="hljs java">初始化数组 A[<span class="hljs-number">1</span>..n]=&#123;<span class="hljs-number">1</span>,<span class="hljs-number">1</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>,<span class="hljs-number">0</span>...<span class="hljs-number">0</span>&#125;
+fibonacci(n,A)
+<span class="hljs-keyword">if</span> n=<span class="hljs-number">1</span> <span class="hljs-keyword">return</span> A[<span class="hljs-number">1</span>]
+<span class="hljs-keyword">if</span> n=<span class="hljs-number">2</span> <span class="hljs-keyword">return</span> A[<span class="hljs-number">2</span>]
+<span class="hljs-keyword">if</span> n&gt;<span class="hljs-number">2</span> 
+    A[n]=(A[n-<span class="hljs-number">1</span>]=<span class="hljs-number">0</span>?fabonacci(n-<span class="hljs-number">1</span>):A[n-<span class="hljs-number">1</span>])+(A[n-<span class="hljs-number">2</span>]=<span class="hljs-number">0</span>?fabonacci(n-<span class="hljs-number">2</span>):A[n-<span class="hljs-number">2</span>])
+    <span class="hljs-keyword">return</span> A[n]</code></pre>
+
+<p> 借助数组做数据缓存中间结果值，可以大大提升算法的运行效率。当然，对于斐波那契数列本身还有很多更好的优化方法，比如使用迭代进行一趟循环，或者借助斐波那契的矩阵乘法定义进行优化等。我们这里只是用这个例子来说明缓存在算法优化中的应用。</p>
+<h2 id="2-思想分析"><a href="#2-思想分析" class="headerlink" title="2. 思想分析"></a>2. 思想分析</h2><p>现在我们把关注点回到缓存思想上来。从对斐波那契数列的优化过程中可以看到，缓存是典型的以空间换取时间的策略。在计算机的设计与程序设计过程中，缓存是一种经常用到的思想。</p>
+<ul>
+<li>在池化技术中，比如数据库连接池，线程池等，为了避免大对象重复创建造成的资源浪费，将连接对象缓存进池里重复使用以提升效率。</li>
+<li>在计算机的体系结构中，为了调节CPU和内存之间的速度差异，使用二级缓存的方式，根据8020原则，对经常使用到数据做缓存，从而提升系统的运行效率。</li>
+<li>在分布式系统的设计中，将数据缓存到离用户最近的位置以解决大数据场景下热点数据的访问性能问题。</li>
+<li>在数据库的访问上，为了避免对硬盘的重复查询，使用Redis、Ehcache和Memcached等开源工具对热点查询数据缓存到内存中。</li>
+<li>在动态规划的算法中，我们依然可以看到缓存的策略，比如在求解最长公共子序列时，使用了一个二维数组来对子问题的最优解做缓存。<br>综上比较，缓存思想的应用可以分成两个方面：一是，在速度相差比较大的软件/硬件之间，用以协调二者的速度差异，提升整体的吞吐率，比如计算机系统中的高速缓冲存储器；二是，对计算资源消耗较大的中间结果做缓存，以避免重复计算，比如数据库连接池中对连接对象的缓存避免重复对对象的创建，以及上述我们在优化斐波那契数列时对子问题中间结果的缓存等。</li>
+</ul>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/07/22/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%AE%97%E6%B3%95Dynamic%20Programming/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">动态规划算法Dynamic Programming</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "缓存思想在算法设计中的应用&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
