@@ -163,7 +163,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      341 字
+      848 字
     </span>
   
 
@@ -173,7 +173,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      13
        分钟
     </span>
   
@@ -205,13 +205,71 @@
             
             <article class="markdown-body">
               <h2 id="文件导入的基本思路"><a href="#文件导入的基本思路" class="headerlink" title="文件导入的基本思路"></a>文件导入的基本思路</h2><p>文件上传到服务器和其他向后台传递数据的方法是一致的，都是基于HTTP协议发送请求报文，区别仅在于发送的数据格式上。具体的，文件上传基于HTTP协议，使用POST方法提交页面form表单中的file元素。在提交的请求头中设置Content-Type为multipart/form-data,即设置form表单的enctype属性为该值。然后用表单的submit方法同步上传或者用ajax异步上传。文件导入在技术上涉及前端数据的发送和后台数据的接收两部分，后台的数据接收会因为不同的服务器实现方式和语言有不同的表现，本文集中分析前端数据发送部分，即基于form表单的file是如何传递到后端服务器中的。</p>
-<h2 id="直接使用表单提交方法同步上传"><a href="#直接使用表单提交方法同步上传" class="headerlink" title="直接使用表单提交方法同步上传"></a>直接使用表单提交方法同步上传</h2><p>这是最典型的方法，直接submit提交到action属性所定义的服务器接收路径中。</p>
-<pre><code class="hljs javascript">&lt;form action=<span class="hljs-string">"/api/upload"</span> method=<span class="hljs-string">"POST"</span> enctype=<span class="hljs-string">"multipart/form-data"</span>&gt;
-        选择文件：&lt;input type=<span class="hljs-string">"file"</span> name=<span class="hljs-string">"uploadFile"</span>/&gt;<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span></span>
-<span class="xml">                 <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"提交"</span>/&gt;</span></span>
-<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span></code></pre>
-<p>![submit提交的请求头](./image/submit request header.png)</p>
-<h2 id="使用原生的XMLHttpRequest对象异步上传"><a href="#使用原生的XMLHttpRequest对象异步上传" class="headerlink" title="使用原生的XMLHttpRequest对象异步上传"></a>使用原生的XMLHttpRequest对象异步上传</h2><h2 id="使用ajaxfileupload-js开源插件上传"><a href="#使用ajaxfileupload-js开源插件上传" class="headerlink" title="使用ajaxfileupload.js开源插件上传"></a>使用ajaxfileupload.js开源插件上传</h2><h2 id="使用FormData对象"><a href="#使用FormData对象" class="headerlink" title="使用FormData对象"></a>使用FormData对象</h2>
+<h2 id="直接使用表单提交方法同步上传"><a href="#直接使用表单提交方法同步上传" class="headerlink" title="直接使用表单提交方法同步上传"></a>直接使用表单提交方法同步上传</h2><p>这是最典型的方法，直接submit提交到action属性所定义的服务器接收路径中。可以给submit添加监听事件处理器来执行一些数据校验的工作。</p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">"/api/upload"</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"POST"</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">"multipart/form-data"</span>&gt;</span>
+        选择文件：<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"file"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"uploadFile"</span>/&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>
+                 <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"提交"</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></code></pre>
+<p>form可以通过四种方式进行提交：<br> | method | enctype | note |<br> | –     |  –     | –   |<br> | POST   | application/x-www-form-urlencoded | default |<br> | POST   | text/plain | |<br> | POST   | multipart/form-data | 进行文件上传使用这个方法 |<br> | GET    | will be ignored | |</p>
+<h2 id="使用原生的XMLHttpRequest对象异步上传"><a href="#使用原生的XMLHttpRequest对象异步上传" class="headerlink" title="使用原生的XMLHttpRequest对象异步上传"></a>使用原生的XMLHttpRequest对象异步上传</h2><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank" rel="noopener">XMLHttpRequest API</a>中有关于该对象的ajax技术的详细介绍。</p>
+<blockquote>
+<p>XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL without having to do a full page refresh. This enables a Web page to update just part of a page without disrupting what the user is doing. XMLHttpRequest is used heavily in AJAX programming.<br>可以借助这个对象，异步上传文件，避免在上传大文件时前台页面卡顿。</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">submitData</span>(<span class="hljs-params">oData</span>) </span>&#123;
+    <span class="hljs-comment">/* the AJAX request... */</span>
+    <span class="hljs-keyword">var</span> oAjaxReq = <span class="hljs-keyword">new</span> XMLHttpRequest();
+    oAjaxReq.submittedData = oData;
+    oAjaxReq.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.responseText);&#125;;
+    <span class="hljs-keyword">if</span> (oData.technique === <span class="hljs-number">0</span>) &#123;
+        <span class="hljs-comment">/* method is GET */</span>
+        oAjaxReq.open(<span class="hljs-string">"get"</span>, oData.receiver.replace(<span class="hljs-regexp">/(?:\?.*)?$/</span>,oData.segments.length &gt; <span class="hljs-number">0</span> ? <span class="hljs-string">"?"</span> + oData.segments.join(<span class="hljs-string">"&amp;"</span>) : <span class="hljs-string">""</span>), <span class="hljs-literal">true</span>);
+        oAjaxReq.send(<span class="hljs-literal">null</span>);
+    &#125; <span class="hljs-keyword">else</span> &#123;
+        <span class="hljs-comment">/* method is POST */</span>
+        oAjaxReq.open(<span class="hljs-string">"post"</span>, oData.receiver, <span class="hljs-literal">true</span>);
+        <span class="hljs-keyword">if</span> (oData.technique === <span class="hljs-number">3</span>) &#123;
+            <span class="hljs-comment">/* enctype is multipart/form-data */</span>
+            <span class="hljs-keyword">var</span> sBoundary = <span class="hljs-string">"---------------------------"</span> + <span class="hljs-built_in">Date</span>.now().toString(<span class="hljs-number">16</span>);
+            oAjaxReq.setRequestHeader(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"multipart\/form-data; boundary="</span> + sBoundary);
+            oAjaxReq.sendAsBinary(<span class="hljs-string">"--"</span> + sBoundary + <span class="hljs-string">"\r\n"</span> +
+            oData.segments.join(<span class="hljs-string">"--"</span> + sBoundary + <span class="hljs-string">"\r\n"</span>) + <span class="hljs-string">"--"</span> + sBoundary + <span class="hljs-string">"--\r\n"</span>);
+        &#125; <span class="hljs-keyword">else</span> &#123;
+            <span class="hljs-comment">/* enctype is application/x-www-form-urlencoded or text/plain */</span>
+            oAjaxReq.setRequestHeader(<span class="hljs-string">"Content-Type"</span>, oData.contentType);
+            oAjaxReq.send(oData.segments.join(oData.technique === <span class="hljs-number">2</span> ? <span class="hljs-string">"\r\n"</span> : <span class="hljs-string">"&amp;"</span>));
+        &#125;
+    &#125;
+&#125;</code></pre>
+<h2 id="使用FormData对象组织提交的参数"><a href="#使用FormData对象组织提交的参数" class="headerlink" title="使用FormData对象组织提交的参数"></a>使用FormData对象组织提交的参数</h2><blockquote>
+<p>The FormData constructor lets you compile a set of key/value pairs to send using XMLHttpRequest. Its primary use is in sending form data, but can also be used independently from a form in order to transmit user keyed data. The transmitted data is in the same format the form’s submit() method uses to send data, if the form’s encoding type were set to “multipart/form-data”. FormData objects can be utilized in a number of ways with an XMLHttpRequest.</p>
+</blockquote>
+<pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">AJAXSubmit</span>(<span class="hljs-params">oFormElement</span>) </span>&#123;
+    <span class="hljs-keyword">if</span> (!oFormElement.action) &#123; <span class="hljs-keyword">return</span>; &#125;
+    <span class="hljs-keyword">var</span> oReq = <span class="hljs-keyword">new</span> XMLHttpRequest();
+    oReq.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.responseText);&#125;;
+    <span class="hljs-keyword">if</span> (oFormElement.method.toLowerCase() === <span class="hljs-string">"post"</span>) &#123;
+        oReq.open(<span class="hljs-string">"post"</span>, oFormElement.action);
+        oReq.send(<span class="hljs-keyword">new</span> FormData(oFormElement));
+    &#125; <span class="hljs-keyword">else</span> &#123;
+        <span class="hljs-keyword">var</span> oField, sFieldType, nFile, sSearch = <span class="hljs-string">""</span>;
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> nItem = <span class="hljs-number">0</span>; nItem &lt; oFormElement.elements.length; nItem++) &#123;
+            oField = oFormElement.elements[nItem];
+            <span class="hljs-keyword">if</span> (!oField.hasAttribute(<span class="hljs-string">"name"</span>)) &#123; <span class="hljs-keyword">continue</span>; &#125;
+            sFieldType = oField.nodeName.toUpperCase() === <span class="hljs-string">"INPUT"</span> ?
+                oField.getAttribute(<span class="hljs-string">"type"</span>).toUpperCase() : <span class="hljs-string">"TEXT"</span>;
+            <span class="hljs-keyword">if</span> (sFieldType === <span class="hljs-string">"FILE"</span>) &#123;
+                <span class="hljs-keyword">for</span> (nFile = <span class="hljs-number">0</span>; nFile &lt; oField.files.length;
+                    sSearch += <span class="hljs-string">"&amp;"</span> + <span class="hljs-built_in">escape</span>(oField.name) + <span class="hljs-string">"="</span> + <span class="hljs-built_in">escape</span>(oField.files[nFile++].name));
+            &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> ((sFieldType !== <span class="hljs-string">"RADIO"</span> &amp;&amp; sFieldType !== <span class="hljs-string">"CHECKBOX"</span>) || oField.checked) &#123;
+                sSearch += <span class="hljs-string">"&amp;"</span> + <span class="hljs-built_in">escape</span>(oField.name) + <span class="hljs-string">"="</span> + <span class="hljs-built_in">escape</span>(oField.value);
+            &#125;
+        &#125;
+        oReq.open(<span class="hljs-string">"get"</span>, oFormElement.action.replace(<span class="hljs-regexp">/(?:\?.*)?$/</span>, sSearch.replace(<span class="hljs-regexp">/^&amp;/</span>, <span class="hljs-string">"?"</span>)), <span class="hljs-literal">true</span>);
+        oReq.send(<span class="hljs-literal">null</span>);
+    &#125;
+&#125;</code></pre>
+
+
             </article>
             <hr>
             <div>
