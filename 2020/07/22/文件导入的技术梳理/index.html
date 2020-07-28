@@ -210,7 +210,36 @@
         选择文件：<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"file"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"uploadFile"</span>/&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span>
                  <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"submit"</span> <span class="hljs-attr">value</span>=<span class="hljs-string">"提交"</span>/&gt;</span>
 <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></code></pre>
-<p>form可以通过四种方式进行提交：<br> | method | enctype | note |<br> | –     |  –     | –   |<br> | POST   | application/x-www-form-urlencoded | default |<br> | POST   | text/plain | |<br> | POST   | multipart/form-data | 进行文件上传使用这个方法 |<br> | GET    | will be ignored | |</p>
+<p>form可以通过四种方式进行提交：</p>
+<table>
+<thead>
+<tr>
+<th>method</th>
+<th>enctype</th>
+<th>note</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>POST</td>
+<td>application/x-www-form-urlencoded</td>
+<td>default</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>text/plain</td>
+<td></td>
+</tr>
+<tr>
+<td>POST</td>
+<td>multipart/form-data</td>
+<td>进行文件上传使用这个方法</td>
+</tr>
+<tr>
+<td>GET</td>
+<td>will be ignored</td>
+<td></td>
+</tr>
+</tbody></table>
 <h2 id="使用原生的XMLHttpRequest对象异步上传"><a href="#使用原生的XMLHttpRequest对象异步上传" class="headerlink" title="使用原生的XMLHttpRequest对象异步上传"></a>使用原生的XMLHttpRequest对象异步上传</h2><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank" rel="noopener">XMLHttpRequest API</a>中有关于该对象的ajax技术的详细介绍。</p>
 <blockquote>
 <p>XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL without having to do a full page refresh. This enables a Web page to update just part of a page without disrupting what the user is doing. XMLHttpRequest is used heavily in AJAX programming.<br>可以借助这个对象，异步上传文件，避免在上传大文件时前台页面卡顿。</p>
