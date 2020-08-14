@@ -242,8 +242,9 @@
 </tbody></table>
 <h2 id="使用原生的XMLHttpRequest对象异步上传"><a href="#使用原生的XMLHttpRequest对象异步上传" class="headerlink" title="使用原生的XMLHttpRequest对象异步上传"></a>使用原生的XMLHttpRequest对象异步上传</h2><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest" target="_blank" rel="noopener">XMLHttpRequest API</a>中有关于该对象的ajax技术的详细介绍。</p>
 <blockquote>
-<p>XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL without having to do a full page refresh. This enables a Web page to update just part of a page without disrupting what the user is doing. XMLHttpRequest is used heavily in AJAX programming.<br>可以借助这个对象，异步上传文件，避免在上传大文件时前台页面卡顿。</p>
+<p>XMLHttpRequest (XHR) objects are used to interact with servers. You can retrieve data from a URL without having to do a full page refresh. This enables a Web page to update just part of a page without disrupting what the user is doing. XMLHttpRequest is used heavily in AJAX programming.</p>
 </blockquote>
+<p>可以借助这个对象，异步上传文件，避免在上传大文件时前台页面卡顿。</p>
 <pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">submitData</span>(<span class="hljs-params">oData</span>) </span>&#123;
     <span class="hljs-comment">/* the AJAX request... */</span>
     <span class="hljs-keyword">var</span> oAjaxReq = <span class="hljs-keyword">new</span> XMLHttpRequest();
@@ -313,6 +314,12 @@
                 <div class="post-prevnext row">
                   <div class="post-prev col-6">
                     
+                    
+                      <a href="/2020/08/13/Linxu%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux文件系统与基本命令</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
                     
                   </div>
                   <div class="post-next col-6">

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="chenruixu">
+  <meta name="keywords" content="">
+  <title>Linux文件系统与基本命令 - chenruixu personal page</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_yg9cfy8wd6.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Chenruixu's Blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-08-13 17:09">
+      August 13, 2020 pm
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      655 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      10
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>与Windows使用驱动盘符不同，Linux使用叫做<strong>虚拟目录</strong>的单一的目录结构存储文件。</p>
+<blockquote>
+<p>The Windows file path tells you exactly which physical disk partition contains the file named test.doc. For example, if you saved test.doc on a flash drive, designated by the J drive, the fi le path would be J:\test.doc. This path indicates that the file is located at the root of the drive assigned the letter J.This is not the method used by Linux. Linux stores fi les within a single directory structure, called a virtual directory. The virtual directory contains fi le paths from all the storage devices installed on the computer, merged into a single directory structure. The Linux virtual directory structure contains a single base directory, called the root. Directories and fi les beneath the root directory are listed based on the directory path used to get to them, similar to the way Windows does it.</p>
+</blockquote>
+<h3 id="Linux系统的文件目录"><a href="#Linux系统的文件目录" class="headerlink" title="Linux系统的文件目录"></a>Linux系统的文件目录</h3><p>一般的，Linux的文件目录基于<a href="http://www.pathname.com/fhs/" target="_blank" rel="noopener">FHS</a>（Filesystem Hierarchy Standard）。当登录系统以后，从/home目录开始，可以使用cd命令切换文件目录。</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>/</td>
+<td>root of the virtual directory, where normally, no files are placed</td>
+</tr>
+<tr>
+<td>/bin</td>
+<td>binary directory, where many GNU user-level utilities are stored</td>
+</tr>
+<tr>
+<td>/boot</td>
+<td>boot directory, where boot files are stored</td>
+</tr>
+<tr>
+<td>/dev</td>
+<td>device directory, where Linux creates device nodes</td>
+</tr>
+<tr>
+<td>/etc</td>
+<td>system configuration files directory</td>
+</tr>
+<tr>
+<td>/home</td>
+<td>home directory, where Linux creates user directories</td>
+</tr>
+<tr>
+<td>/lib</td>
+<td>library directory, where system and application library files are stored</td>
+</tr>
+<tr>
+<td>/media</td>
+<td>media directory, a common place for mount points used for removable media</td>
+</tr>
+<tr>
+<td>/mnt</td>
+<td>mount directory, another common place for mount points used for</td>
+</tr>
+<tr>
+<td>removable media</td>
+<td></td>
+</tr>
+<tr>
+<td>/opt</td>
+<td>optional directory, often used to store third-party software packages</td>
+</tr>
+<tr>
+<td>and data files</td>
+<td></td>
+</tr>
+<tr>
+<td>/proc</td>
+<td>process directory, where current hardware and process information is stored</td>
+</tr>
+<tr>
+<td>/root</td>
+<td>root home directory</td>
+</tr>
+<tr>
+<td>/sbin</td>
+<td>system binary directory, where many GNU admin-level utilities are stored</td>
+</tr>
+<tr>
+<td>/run</td>
+<td>run directory, where runtime data is held during system operation</td>
+</tr>
+<tr>
+<td>/srv</td>
+<td>service directory, where local services store their files</td>
+</tr>
+<tr>
+<td>/sys</td>
+<td>system directory, where system hardware information files are stored</td>
+</tr>
+<tr>
+<td>/tmp</td>
+<td>temporary directory, where temporary work files can be created and destroyed</td>
+</tr>
+<tr>
+<td>/usr</td>
+<td>user binary directory, where the bulk of GNU user-level utilities and data files are</td>
+</tr>
+<tr>
+<td>stored</td>
+<td></td>
+</tr>
+<tr>
+<td>/var</td>
+<td>variable directory, for files that change frequently, such as log files</td>
+</tr>
+</tbody></table>
+<h3 id="文件的权限"><a href="#文件的权限" class="headerlink" title="文件的权限"></a>文件的权限</h3><p>在使用<strong>ls -l</strong>命令查询某个目录下的文件时，会展示出与文件访问权限相关的信息。其中第一位是文件类型位，其含义如下列表所示：</p>
+<table>
+<thead>
+<tr>
+<th>flag</th>
+<th>meanning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-</td>
+<td>for files</td>
+</tr>
+<tr>
+<td>d</td>
+<td>for directories</td>
+</tr>
+<tr>
+<td>l</td>
+<td>for links</td>
+</tr>
+<tr>
+<td>c</td>
+<td>for character devices</td>
+</tr>
+<tr>
+<td>b</td>
+<td>for block devices</td>
+</tr>
+<tr>
+<td>n</td>
+<td>for network devices</td>
+</tr>
+</tbody></table>
+<p>第二至九位是权限控制为，每三个一组，分别代表属主的权限，属组的权限和其他人员的权限。每个组内，三位字符分别是读权限r，写权限w和执行权限x，如果没有对应权限则置为-。具体的，八进制权限为：</p>
+<table>
+<thead>
+<tr>
+<th>permissions</th>
+<th>Binary</th>
+<th>Octal</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>—</td>
+<td>000</td>
+<td>0</td>
+<td>No permissions</td>
+</tr>
+<tr>
+<td>–x</td>
+<td>001</td>
+<td>1</td>
+<td>Execute-only permission</td>
+</tr>
+<tr>
+<td>-w-</td>
+<td>010</td>
+<td>2</td>
+<td>Write-only permission</td>
+</tr>
+<tr>
+<td>-wx</td>
+<td>011</td>
+<td>3</td>
+<td>Write and execute permissions</td>
+</tr>
+<tr>
+<td>r–</td>
+<td>100</td>
+<td>4</td>
+<td>Read-only permission</td>
+</tr>
+<tr>
+<td>r-x</td>
+<td>101</td>
+<td>5</td>
+<td>Read and execute permissions</td>
+</tr>
+<tr>
+<td>rw-</td>
+<td>110</td>
+<td>6</td>
+<td>Read and write permissions</td>
+</tr>
+<tr>
+<td>rwx</td>
+<td>111</td>
+<td>7</td>
+<td>Read, write, and execute permissions</td>
+</tr>
+</tbody></table>
+<h3 id="常用的操作文件的命令"><a href="#常用的操作文件的命令" class="headerlink" title="常用的操作文件的命令"></a>常用的操作文件的命令</h3>
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/07/22/%E6%96%87%E4%BB%B6%E5%AF%BC%E5%85%A5%E7%9A%84%E6%8A%80%E6%9C%AF%E6%A2%B3%E7%90%86/">
+                        <span class="hidden-mobile">文件导入的技术梳理</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: 'article.markdown-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Linux文件系统与基本命令&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
